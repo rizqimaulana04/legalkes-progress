@@ -1,0 +1,7 @@
+<?php
+require dirname(__DIR__).'/app/bootstrap.php';
+if (PHP_SAPI !== 'cli') exit(1);
+$groups=['ALKES / PKRT'=>['IDAK','CDAKB / CDB','CPB / CPAKB','Izin Edar AKD','Izin Edar AKL','PKRT'],'BPOM / PANGAN / KOSMETIK'=>['BPOM MD','BPOM ML','PIRT / SPP-IRT','CPPOB','SMKPO','Notifikasi Kosmetik','CPKB','CDOB','Sertifikasi Halal']];
+foreach ($groups as $category=>$names) foreach ($names as $name) { q('INSERT INTO services(name,category) VALUES (?,?) ON DUPLICATE KEY UPDATE category=VALUES(category)',[$name,$category]); $id=(int)one('SELECT id FROM services WHERE name=?',[$name])['id']; if (!(int)one('SELECT COUNT(*) n FROM service_milestones WHERE service_id=?',[$id])['n']) foreach (['Persiapan Dokumen','Review Dokumen','Pengajuan','Verifikasi','Perbaikan','Menunggu Instansi','Terbit'] as $i=>$step) q('INSERT INTO service_milestones(service_id,name,sort_order,weight) VALUES (?,?,?,?)',[$id,$step,$i+1,1]); }
+$email=getenv('ADMIN_EMAIL'); $password=getenv('ADMIN_PASSWORD'); $name=getenv('ADMIN_NAME') ?: 'Administrator';
+if ($email && $password) { if (strlen($password)<12) throw new RuntimeException('ADMIN_PASSWORD minimal 12 karakter'); q('INSERT INTO users(name,username,email,password_hash,role) VALUES (?,?,?,?,"ADMIN") ON DUPLICATE KEY UPDATE id=id',[$name,'admin',$email,password_hash($password,PASSWORD_DEFAULT)]); echo "Admin awal tersedia.\n"; } else echo "Master layanan siap. Set ADMIN_EMAIL dan ADMIN_PASSWORD lalu jalankan lagi untuk Admin awal.\n";
