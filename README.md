@@ -27,6 +27,4 @@ Repository berisi kode sumber dan aset presentasi. Konfigurasi produksi, databas
 
 ## Pemilik
 
-Muhammad Rizqi Maulana (rizqimaulana04).
-
-Pengembangan dilakukan dengan bantuan Codex.
+MRM (rizqimaulana04).
